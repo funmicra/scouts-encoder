@@ -1,0 +1,64 @@
+
+# Python bytecode
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+*.egg-info/
+
+# Flask instance folder
+instance/
+
+# PyInstaller
+dist/
+build/
+*.spec
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+*.bak
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Docker
+*.dockerignore
+docker-compose.override.yml
+docker-compose.*.yml
+docker-volume-backups/
+*.tar
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*.bak
+*.old
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+pytest_cache/

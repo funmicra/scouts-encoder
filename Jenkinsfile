@@ -31,7 +31,7 @@ pipeline {
                      credentialsId: 'nexus_registry_login',
                       usernameVariable: 'REG_USER',
                        passwordVariable: 'REG_PASS'
-                       )]) {
+                    )]) {
                          sh ''' 
                          echo "$REG_PASS" | docker login ${REGISTRY_URL} -u "$REG_USER" --password-stdin 
                          ''' 

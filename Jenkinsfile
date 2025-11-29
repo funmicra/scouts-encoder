@@ -1,0 +1,71 @@
+pipeline {
+    agent any
+    triggers {
+        githubPush()
+    }
+    
+    environment {
+        REGISTRY_URL = "registry.black-crab.cc"
+    }
+
+    stages {
+
+        stage('Connect to Github repo') {
+            steps {
+                git credentialsId: 'github-creds',
+                    url: 'https://github.com/funmicra/scouts-encoder.git',
+                    branch: 'master'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh """
+                    docker build -t registry.black-crab.cc/greek-encoder:latest .
+                    """
+                }
+            }
+        }
+
+        stage('Authenticate to Registry') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'nexus_registry_login',
+                    usernameVariable: 'REG_USER',
+                    passwordVariable: 'REG_PASS'
+                )]) {
+                    sh '''
+                    echo "$REG_PASS" | docker login ${REGISTRY_URL} -u "$REG_USER" --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Push to Nexus Registry') {
+            steps {
+                sh """
+                docker push registry.black-crab.cc/greek-encoder:latest
+                """
+            }
+        }
+    }
+
+        stage('Push to Nexus Registry') {
+            steps {
+                sh """
+                docker run -d -p 5000:5000 --restart unless-stoped registry.black-crab.cc/greek-encoder:latest
+                """
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Deployment pipeline executed successfully."
+        }
+        failure {
+            echo "Pipeline execution failed. Please review logs."
+        }
+    }
+}

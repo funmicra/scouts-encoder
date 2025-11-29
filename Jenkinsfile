@@ -32,13 +32,11 @@ pipeline {
         stage('Authenticate to Registry') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'nexus_registry_login',
-                    usernameVariable: 'REG_USER',
-                    passwordVariable: 'REG_PASS'
+                    credentialsId: 'dockerhub-login', // change to your DockerHub creds
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh '''
-                    echo "$REG_PASS" | docker login ${REGISTRY_URL} -u "$REG_USER" --password-stdin
-                    '''
+                    sh 'echo "$DOCKER_PASS" | docker login ${REGISTRY_URL} -u "$DOCKER_USER" --password-stdin'
                 }
             }
         }
@@ -50,7 +48,7 @@ pipeline {
                 """
             }
         }
-        
+
         stage('Run Container') {
             steps {
                 sh "docker run -d -p 5000:5000 --restart unless-stopped ${FULL_IMAGE}"

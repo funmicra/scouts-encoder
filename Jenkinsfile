@@ -18,33 +18,39 @@ pipeline {
                     branch: 'master'
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${FULL_IMAGE} ."
+                script {
+                    sh """
+                    docker build -t ${FULL_IMAGE} .
+                    """
+                }
             }
         }
 
         stage('Authenticate to Registry') {
-             steps {
-                 withCredentials([usernamePassword(
-                     credentialsId: 'nexus_registry_login',
-                      usernameVariable: 'REG_USER',
-                       passwordVariable: 'REG_PASS'
-                    )]) {
-                         sh ''' 
-                         echo "$REG_PASS" | docker login ${REGISTRY_URL} -u "$REG_USER" --password-stdin 
-                         ''' 
-                        } 
-                    } 
-                }
-
-        stage('Push Docker Image') {
             steps {
-                sh "docker push ${FULL_IMAGE}"
+                withCredentials([usernamePassword(
+                    credentialsId: 'nexus_registry_login',
+                    usernameVariable: 'REG_USER',
+                    passwordVariable: 'REG_PASS'
+                )]) {
+                    sh '''
+                    echo "$REG_PASS" | docker login ${REGISTRY_URL} -u "$REG_USER" --password-stdin
+                    '''
+                }
             }
         }
 
+        stage('Push to Nexus Registry') {
+            steps {
+                sh """
+                docker push ${FULL_IMAGE}
+                """
+            }
+        }
+        
         stage('Run Container') {
             steps {
                 sh "docker run -d -p 5000:5000 --restart unless-stopped ${FULL_IMAGE}"

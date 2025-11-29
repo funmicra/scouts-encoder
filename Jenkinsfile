@@ -49,7 +49,7 @@ pipeline {
                 """
             }
         }
-    }
+    
 
         stage('Push to Nexus Registry') {
             steps {
@@ -58,14 +58,14 @@ pipeline {
                 """
             }
         }
-    }
-
-    post {
-        success {
-            echo "Deployment pipeline executed successfully."
-        }
-        failure {
-            echo "Pipeline execution failed. Please review logs."
+    
+        post {
+            success {
+                echo "Deployment pipeline executed successfully."
+            }
+            failure {
+                echo "Pipeline execution failed. Please review logs."
+            }
         }
     }
 }

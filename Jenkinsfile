@@ -6,11 +6,12 @@ pipeline {
     
     environment {
         REGISTRY_URL = "registry.black-crab.cc"
+        IMAGE_NAME   = "greek-encoder"
+        FULL_IMAGE   = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
     }
 
     stages {
-
-        stage('Connect to Github repo') {
+        stage('Checkout Source') {
             steps {
                 git credentialsId: 'github-creds',
                     url: 'https://github.com/funmicra/scouts-encoder.git',
@@ -20,52 +21,39 @@ pipeline {
         
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh """
-                    docker build -t registry.black-crab.cc/greek-encoder:latest .
-                    """
-                }
+                sh "docker build -t ${FULL_IMAGE} ."
             }
         }
 
         stage('Authenticate to Registry') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'nexus_registry_login',
-                    usernameVariable: 'REG_USER',
-                    passwordVariable: 'REG_PASS'
-                )]) {
-                    sh '''
-                    echo "$REG_PASS" | docker login ${REGISTRY_URL} -u "$REG_USER" --password-stdin
-                    '''
+             steps {
+                 withCredentials([usernamePassword(
+                     credentialsId: 'nexus_registry_login',
+                      usernameVariable: 'REG_USER',
+                       passwordVariable: 'REG_PASS'
+                       )]) {
+                         sh ''' 
+                         echo "$REG_PASS" | docker login ${REGISTRY_URL} -u "$REG_USER" --password-stdin 
+                         ''' 
+                        } 
+                    } 
                 }
+
+        stage('Push Docker Image') {
+            steps {
+                sh "docker push ${FULL_IMAGE}"
             }
         }
 
-        stage('Push to Nexus Registry') {
+        stage('Run Container') {
             steps {
-                sh """
-                docker push registry.black-crab.cc/greek-encoder:latest
-                """
+                sh "docker run -d -p 5000:5000 --restart unless-stopped ${FULL_IMAGE}"
             }
         }
-    
+    }
 
-        stage('Push to Nexus Registry') {
-            steps {
-                sh """
-                docker run -d -p 5000:5000 --restart unless-stoped registry.black-crab.cc/greek-encoder:latest
-                """
-            }
-        }
-    
-        post {
-            success {
-                echo "Deployment pipeline executed successfully."
-            }
-            failure {
-                echo "Pipeline execution failed. Please review logs."
-            }
-        }
+    post {
+        success { echo "Deployment pipeline executed successfully." }
+        failure { echo "Pipeline execution failed. Please review logs." }
     }
 }

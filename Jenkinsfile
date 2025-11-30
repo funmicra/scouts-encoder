@@ -6,7 +6,7 @@ pipeline {
     
     environment {
         REGISTRY_URL = "registry.black-crab.cc"
-        IMAGE_NAME   = "demo-quarkus"
+        IMAGE_NAME   = "scouts-encoder"
         FULL_IMAGE   = "${env.REGISTRY_URL}/${env.IMAGE_NAME}:latest"
     }
 
@@ -15,7 +15,7 @@ pipeline {
         stage('Connect to Github repo') {
             steps {
                 git credentialsId: 'github-creds',
-                    url: 'https://github.com/funmicra/java_quarkus_project.git',
+                    url: 'https://github.com/funmicra/scouts-encoder.git',
                     branch: 'master'
             }
         }

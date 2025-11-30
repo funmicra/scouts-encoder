@@ -60,8 +60,7 @@ pipeline {
                     ssh -o StrictHostKeyChecking=no funmicra@192.168.88.22 '
                         docker pull funmicra/greek-encoder:latest &&
                         docker stop greek-encoder || true &&
-                        docker rm greek-encoder || true &&
-                        docker run -d -p 5050:5000 --name greek-encoder --restart unless-stopped funmicra/greek-encoder:latest
+                        docker rm greek-encoder || true &&                        
                     '
                     """
                 }

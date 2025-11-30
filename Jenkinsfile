@@ -32,11 +32,13 @@ pipeline {
         stage('Authenticate to Registry') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-login', // change to your DockerHub creds
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
+                    credentialsId: 'nexus_registry_login',
+                    usernameVariable: 'REG_USER',
+                    passwordVariable: 'REG_PASS'
                 )]) {
-                    sh 'echo "$DOCKER_PASS" | docker login ${REGISTRY_URL} -u "$DOCKER_USER" --password-stdin'
+                    sh '''
+                    echo "$REG_PASS" | docker login ${REGISTRY_URL} -u "$REG_USER" --password-stdin
+                    '''
                 }
             }
         }
@@ -49,9 +51,18 @@ pipeline {
             }
         }
 
-        stage('Run Container') {
+        stage('Deploy to Remote Host') {
             steps {
-                sh "docker run -d -p 5000:5000 --restart unless-stopped ${FULL_IMAGE}"
+                sshagent(['DEBIANSERVER']) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no funmicra@192.168.88.22 '
+                        docker pull funmicra/greek-encoder:latest &&
+                        docker stop greek-encoder || true &&
+                        docker rm greek-encoder || true &&
+                        docker run -d -p 5001:5000 --name greek-encoder --restart unless-stopped funmicra/greek-encoder:latest
+                    '
+                    """
+                }
             }
         }
     }

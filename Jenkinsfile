@@ -61,7 +61,7 @@ pipeline {
                         docker pull funmicra/greek-encoder:latest &&
                         docker stop greek-encoder || true &&
                         docker rm greek-encoder || true &&
-                        docker run -d -p 5000:5000 --name Greek-Encoder --restart unless-stopped funmicra/greek-encoder:latest
+                        docker run -d -p 5050:5000 --name Greek-Encoder --restart unless-stopped funmicra/greek-encoder:latest
                     '
                     """
                 }

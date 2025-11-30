@@ -5,7 +5,7 @@ pipeline {
     }
     
     environment {
-        REGISTRY_URL = "registry.black-crab.cc"
+        REGISTRY_URL = "docker.io/funmicra"
         IMAGE_NAME   = "scouts-encoder"
         FULL_IMAGE   = "${env.REGISTRY_URL}/${env.IMAGE_NAME}:latest"
     }
@@ -33,7 +33,7 @@ pipeline {
         stage('Authenticate to Registry') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'nexus_registry_login',
+                    credentialsId: 'DOCKER_HUB',
                     usernameVariable: 'REG_USER',
                     passwordVariable: 'REG_PASS'
                 )]) {
@@ -44,7 +44,7 @@ pipeline {
             }
         }
 
-        stage('Push to Nexus Registry') {
+        stage('Push to DockerHub') {
             steps {
                 sh """
                 docker push ${FULL_IMAGE}

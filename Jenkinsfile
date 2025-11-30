@@ -6,19 +6,20 @@ pipeline {
     
     environment {
         REGISTRY_URL = "registry.black-crab.cc"
-        IMAGE_NAME   = "greek-encoder"
-        FULL_IMAGE   = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
+        IMAGE_NAME   = "demo-quarkus"
+        FULL_IMAGE   = "${env.REGISTRY_URL}/${env.IMAGE_NAME}:latest"
     }
 
     stages {
-        stage('Checkout Source') {
+
+        stage('Connect to Github repo') {
             steps {
                 git credentialsId: 'github-creds',
-                    url: 'https://github.com/funmicra/scouts-encoder.git',
+                    url: 'https://github.com/funmicra/java_quarkus_project.git',
                     branch: 'master'
             }
         }
-
+        
         stage('Build Docker Image') {
             steps {
                 script {
@@ -50,6 +51,7 @@ pipeline {
                 """
             }
         }
+
 
         stage('Deploy to Remote Host') {
             steps {

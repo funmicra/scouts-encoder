@@ -5,7 +5,7 @@ pipeline {
     }
     
     environment {
-        REGISTRY_URL = "nexux.local:5000"
+        REGISTRY_URL = "192.168.88.22:5000"
         IMAGE_NAME   = "scouts-encoder"
         FULL_IMAGE   = "${env.REGISTRY_URL}/${env.IMAGE_NAME}:latest"
     }

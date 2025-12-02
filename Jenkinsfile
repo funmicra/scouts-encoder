@@ -65,8 +65,6 @@ pipeline {
                         docker stop greek-encoder || true &&
                         docker rm greek-encoder || true &&                        
                     '
-                    sleep 5
-                    echo "check here.. http://192.168.88.22:5050/"
                     """
                 }
             }
@@ -76,7 +74,7 @@ pipeline {
     }
 
     post {
-        success { echo "Deployment pipeline executed successfully." }
+        success { echo "Deployment pipeline executed successfully. \n check here.. http://192.168.88.22:5050/" }
         failure { echo "Pipeline execution failed. Please review logs." }
     }
 }

@@ -5,7 +5,7 @@ pipeline {
     }
     
     environment {
-        REGISTRY_URL = "registry.black-crab.cc"
+        REGISTRY_URL = "nexux.local:5000"
         IMAGE_NAME   = "scouts-encoder"
         FULL_IMAGE   = "${env.REGISTRY_URL}/${env.IMAGE_NAME}:latest"
     }
@@ -64,7 +64,7 @@ pipeline {
                         docker pull funmicra/greek-encoder:latest &&
                         docker stop Greek-Encoder || true &&
                         docker rm Greek-Encoder || true && 
-                        docker run -d -p 5050:5000 --name Greek-Encoder --restart unless-stopped registry.black-crab.cc/greek-encoder:latest                       
+                        docker run -d -p 5050:5000 --name Greek-Encoder --restart unless-stopped ${FULL_IMAGE}                       
                     '
                     """
                 }

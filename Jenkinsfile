@@ -11,7 +11,7 @@ pipeline {
     }
 
     stages {
-
+        // Stage to connect to the Github repository
         stage('Connect to Github repo') {
             steps {
                 git credentialsId: 'github-creds',
@@ -20,6 +20,7 @@ pipeline {
             }
         }
         
+        // Stage to build the Docker image
         stage('Build Docker Image') {
             steps {
                 script {
@@ -30,6 +31,7 @@ pipeline {
             }
         }
 
+        // Stage to authenticate to DockerHub registry
         stage('Authenticate to Registry') {
             steps {
                 withCredentials([usernamePassword(
@@ -44,6 +46,7 @@ pipeline {
             }
         }
 
+        // Stage to push the Docker image to DockerHub
         stage('Push to DockerHub') {
             steps {
                 sh """
@@ -52,7 +55,7 @@ pipeline {
             }
         }
 
-
+        // Stage to deploy the Docker image to a remote host
         stage('Deploy to Remote Host') {
             steps {
                 sshagent(['DEBIANSERVER']) {
@@ -62,10 +65,14 @@ pipeline {
                         docker stop greek-encoder || true &&
                         docker rm greek-encoder || true &&                        
                     '
+                    sleep 5
+                    echo "check here.. http://192.168.88.22:5050/"
                     """
                 }
             }
         }
+
+
     }
 
     post {

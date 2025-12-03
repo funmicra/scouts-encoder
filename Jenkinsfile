@@ -61,7 +61,7 @@ pipeline {
                 sshagent(['DEBIANSERVER']) {
                     sh """
                     ssh -o StrictHostKeyChecking=no funmicra@192.168.88.22 '
-                        docker pull funmicra/greek-encoder:latest &&
+                        docker pull ${FULL_IMAGE}  &&
                         docker stop Greek-Encoder || true &&
                         docker rm Greek-Encoder || true && 
                         docker run -d -p 5050:5000 --name Greek-Encoder --restart unless-stopped ${FULL_IMAGE}                       

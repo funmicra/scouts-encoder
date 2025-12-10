@@ -1,45 +1,8 @@
-# ----------------------------------------
-# Build stage
-# ----------------------------------------
-FROM python:3.12-slim AS builder
-
+FROM python:3.11-slim
 WORKDIR /app
-
-# Install build essentials only for compiling dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy only requirements first for caching
-COPY requirements.txt .
-
-# Upgrade pip and install dependencies
-RUN python -m pip install --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
-
-# Copy application source code (needed for wheels, etc.)
-COPY . .
-
-# ----------------------------------------
-# Production stage
-# ----------------------------------------
-FROM python:3.12-slim
-
-WORKDIR /app
-
-# Copy only installed packages from builder
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Copy only application files (exclude tests/docs if needed)
-COPY --from=builder /app /app
-
-# Optimize environment
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Expose application port
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . /app
+ENV FLASK_APP=app-v1.5.py
 EXPOSE 5000
-
-# Gunicorn entrypoint
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "--threads", "2", "app:app"]
+CMD ["python3", "-u", "app-v1.5.py"]

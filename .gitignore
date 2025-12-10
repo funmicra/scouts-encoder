@@ -62,3 +62,6 @@ htmlcov/
 .cache
 nosetests.xml
 pytest_cache/
+
+app-v1.py
+Dockerfile.old

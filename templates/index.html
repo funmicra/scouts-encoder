@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="el">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>⚜️ 7η Ομάδα Προσκόπων Εξοχής</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background:#1f1f1f;
+            color:#eee;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            min-height:100vh;
+            text-align:center;
+        }
+        .card {
+            width:95%;
+            max-width:800px;
+            padding:1.2rem;
+            background:#161616;
+            border-radius:8px;
+            box-shadow:0 6px 20px rgba(0,0,0,0.6);
+            text-align:center;
+        }
+        h1 { color:#f0a500; margin-bottom:1rem; }
+        form { display:flex; flex-direction:column; align-items:center; width:100%; }
+        textarea {
+            width:80%;
+            min-height:120px;
+            padding:0.7rem;
+            background:#2b2b2b;
+            color:#eee;
+            border-radius:6px;
+            border:1px solid #444;
+            margin:auto;
+        }
+        select, input, button {
+            padding:0.6rem;
+            border-radius:6px;
+            text-align:center;
+        }
+        .row {
+            display:flex;
+            gap:0.6rem;
+            margin-top:0.6rem;
+            align-items:center;
+            justify-content:center;
+        }
+        .output {
+            background:#2b2b2b;
+            padding:0.8rem;
+            border-radius:6px;
+            margin-top:0.8rem;
+            word-break:break-word;
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>⚜️ <br> 7η Ομάδα Προσκόπων Εξοχής</h1>
+        <form method="post">
+            <div style="height:1rem;"></div> 
+            <textarea name="input_text" id="input_text" placeholder="Γράψε εδώ το κείμενό σου...">{{ input_text|default('') }}</textarea>
+            
+            <div style="height:0.5rem;"></div>
+            <div class="row">
+                <label><input type="radio" name="mode" value="encode" {% if mode=='encode' %}checked{% endif %}> Κωδικοποίηση</label>
+                <label><input type="radio" name="mode" value="decode" {% if mode=='decode' %}checked{% endif %}> Αποκωδικοποίηση</label>
+            </div>
+            <div style="height:1rem;"></div>
+            <select name="encoding_type">
+                {% for name in encodings %}
+                <option value="{{ name }}" {% if encoding_type==name %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+            <div style="height:0.5rem;"></div>
+            <div style="margin-top:.8rem; display:flex; gap:.6rem;">
+                <button type="submit">Εκτέλεση</button>
+                <button type="button" id="copyBtn">Αντιγραφή</button>
+                <button type="button" onclick="document.getElementById('input_text').value=''; const out=document.querySelector('.output'); if(out) out.innerHTML='';">Καθαρισμός</button>
+            </div>
+        </form>
+
+        {% if result %}
+        <div style="height:0.5rem;"></div>
+        <div class="output">
+            <strong>Αποτέλεσμα:</strong>
+            <div style="margin-top:.5rem;">{{ result }}</div>
+        </div>
+        {% endif %}
+
+        {% if error_msg %}
+        <div style="color:#ff8080; margin-top:.6rem;">{{ error_msg|safe }}</div>
+        {% endif %}
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyBtn = document.getElementById('copyBtn');
+        if (!copyBtn) return;
+
+        copyBtn.addEventListener('click', function() {
+            const resultDiv = document.querySelector('.output div');
+            if(!resultDiv) {
+                alert('Δεν υπάρχει κείμενο για αντιγραφή.');
+                return;
+            }
+            const text = resultDiv.innerText.trim(); 
+            navigator.clipboard.writeText(text)
+                .then(() => alert('Αντιγράφηκε στο πρόχειρο!'))
+                .catch(err => console.error('Σφάλμα αντιγραφής:', err));
+        });
+    });
+    </script>
+</body>
+</html>

@@ -5,7 +5,7 @@ pipeline {
     }
     
     environment {
-        REGISTRY_URL = "registry.syndicate"
+        REGISTRY_URL = "registry.syndicate.black-crab.cc"
         IMAGE_NAME   = "scouts-encoder"
         FULL_IMAGE   = "${env.REGISTRY_URL}/${env.IMAGE_NAME}:latest"
     }

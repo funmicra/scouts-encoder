@@ -5,7 +5,7 @@ pipeline {
     }
     
     environment {
-        REGISTRY_URL = "registry.syndicate.black-crab.cc"
+        REGISTRY_URL = "registry.syndicate"
         IMAGE_NAME   = "scouts-encoder"
         FULL_IMAGE   = "${env.REGISTRY_URL}/${env.IMAGE_NAME}:latest"
     }
@@ -60,7 +60,7 @@ pipeline {
             steps {
                 sshagent(['DEBIANSERVER']) {
                     sh """
-                    ssh -o StrictHostKeyChecking=no funmicra@192.168.88.22 '
+                    ssh -o StrictHostKeyChecking=no ansible@192.168.88.22 '
                         docker pull ${FULL_IMAGE}  &&
                         docker stop Greek-Encoder || true &&
                         docker rm Greek-Encoder || true && 
